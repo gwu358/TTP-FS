@@ -40,7 +40,14 @@ export const fetchSingleStock = symbol => async dispatch => {
     const res = await axios.get(
       `https://api.iextrading.com/1.0/stock/${symbol}/ohlc`
     )
-    dispatch(getSingleStock(res.data || initialState.single))
+    let stock
+    if (res.data) {
+      stock = res.data
+      stock.open = stock.open.price
+      stock.low = stock.low.price
+      stock.current = stock.close
+    }
+    dispatch(getSingleStock(stock || initialState.single))
   } catch (err) {
     console.error(err)
   }

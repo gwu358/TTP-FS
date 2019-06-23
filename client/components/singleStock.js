@@ -13,11 +13,12 @@ class SingleStock extends React.Component {
     console.log(stock, stock.open)
     return (
       <div>
-        open: {stock.open && stock.open.price} {'\t'}
+        open: {stock.open} {'\t'}
         high: {stock.high + '\t'}
         low: {stock.low + '\t'}
+        close: {stock.close + '\t'}
         <br />
-        current: {stock.close && stock.close.price + '\t'}
+        current: {stock.current + '\t'}
         <button onClick={() => {}}>Buy</button>
       </div>
     )

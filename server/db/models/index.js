@@ -8,6 +8,10 @@ const User_stock = require('./user_stock')
  *
  *    BlogPost.belongsTo(User)
  */
+Transaction.belongsTo(User)
+User.hasMany(Transaction)
+User_stock.belongsTo(User)
+User.hasMany(User_stock)
 
 /**
  * We'll export all of our models here, so that any time a module needs a model,
