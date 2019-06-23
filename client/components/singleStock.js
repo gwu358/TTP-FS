@@ -10,7 +10,17 @@ class SingleStock extends React.Component {
 
   render() {
     const {stock} = this.props
-    return <div />
+    console.log(stock, stock.open)
+    return (
+      <div>
+        open: {stock.open && stock.open.price} {'\t'}
+        high: {stock.high + '\t'}
+        low: {stock.low + '\t'}
+        <br />
+        current: {stock.close && stock.close.price + '\t'}
+        <button onClick={() => {}}>Buy</button>
+      </div>
+    )
   }
 }
 const mapState = state => ({
