@@ -44,7 +44,7 @@ export const fetchSingleStock = symbol => async dispatch => {
     if (res.data) {
       stock = res.data
       stock.open = stock.open.price
-      stock.low = stock.low.price
+      stock.close = stock.close.price
       stock.current = stock.close
     }
     dispatch(getSingleStock(stock || initialState.single))

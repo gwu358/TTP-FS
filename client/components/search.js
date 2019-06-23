@@ -4,17 +4,20 @@ import {fetchAllStocks, fetchSingleStock} from '../store'
 
 class Search extends React.Component {
   componentDidMount() {
-    console.log('do things')
     this.props.fetchAllStocks()
   }
 
   render() {
-    const {stocks} = this.props
+    const {stocks, fetchSingleStock} = this.props
     console.log(stocks.length)
     return (
       <div>
         <p>{stocks.length}</p>
-        <form action="submit" name="symbol" onSubmit={evt => getStock(evt)}>
+        <form
+          action="submit"
+          name="symbol"
+          onSubmit={evt => fetchSingleStock(evt)}
+        >
           <input
             className="input"
             type="text"
@@ -30,14 +33,14 @@ const mapState = state => ({
   stocks: state.stock.all
 })
 
-const mapDispatch = dispatch => ({
+const mapDispatch = (dispatch, props) => ({
   fetchAllStocks: () => {
     dispatch(fetchAllStocks())
   },
   fetchSingleStock: evt => {
     evt.preventDefault()
-    const input = evt.target.symbol.value
-    dispatch(fetchSingleStock(input))
+    const symbol = evt.target.symbol.value
+    props.history.push(`/stock/${symbol}`)
   }
 })
 
