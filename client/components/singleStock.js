@@ -13,21 +13,6 @@ class SingleStock extends React.Component {
     // this.editQuantity = this.editQuantity.bind(this);
   }
 
-  IncrementItem = () => {
-    this.setState({quantity: this.state.quantity + 1})
-  }
-
-  DecreaseItem = () => {
-    this.setState({quantity: this.state.quantity - 1})
-  }
-
-  editQuantity = event => {
-    let quantity = Number(
-      event.target.validity.valid ? event.target.value : this.state.quantity
-    )
-    this.setState({quantity})
-  }
-
   componentDidMount() {
     const symbol = this.props.match.params.symbol
     // this.props.fetchSingleStock(symbol)
@@ -45,9 +30,28 @@ class SingleStock extends React.Component {
       })
   }
 
+  IncrementItem = () => {
+    this.setState({quantity: this.state.quantity + 1})
+  }
+
+  DecreaseItem = () => {
+    this.setState({quantity: this.state.quantity - 1})
+  }
+
+  editQuantity = event => {
+    let quantity = Number(
+      event.target.validity.valid ? event.target.value : this.state.quantity
+    )
+    this.setState({quantity})
+  }
+
+  buy = quantity => {
+    const symbol = this.props.match.params.symbol.toUpperCase()
+    console.log(symbol, quantity)
+  }
+
   render() {
     const {stock} = this.state
-    const {buy} = this.props
     return (
       <div>
         open: {stock.open} {'\t'}
@@ -67,20 +71,20 @@ class SingleStock extends React.Component {
         <button disabled={!this.state.quantity} onClick={this.DecreaseItem}>
           ↓
         </button>
-        <button onClick={() => buy(this.state.quantity)}>Buy</button>
+        <button onClick={() => this.buy(this.state.quantity)}>Buy</button>
       </div>
     )
   }
 }
-const mapState = state => ({
-  stock: state.stock.single
-})
+// const mapState = state => ({
+//   stock: state.stock.single
+// })
 
-const mapDispatch = (dispatch, props) => ({
-  buy: quantity => {
-    const symbol = props.match.params.symbol.toUpperCase()
-    console.log(symbol, quantity)
-  }
-})
+// const mapDispatch = (dispatch, props) => ({
+//   buy: quantity => {
+//     const symbol = props.match.params.symbol.toUpperCase()
+//     console.log(symbol, quantity)
+//   }
+// })
 
-export default connect(mapState, mapDispatch)(SingleStock)
+export default SingleStock
