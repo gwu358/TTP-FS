@@ -16,3 +16,14 @@ router.get('/', async (req, res, next) => {
     next(err)
   }
 })
+
+router.post('/', async (req, res, next) => {
+  try {
+    if (!req.user) res.sendStatus(404)
+    const {symbol, price, quantity} = req.body
+    await Transaction.create({symbol, price, quantity, userId: req.user.id})
+    res.sendStatus(200)
+  } catch (err) {
+    next(err)
+  }
+})
