@@ -10,7 +10,7 @@ const GET_ALL_STOCKS = 'GET_ALL_STOCKS'
 /**
  * INITIAL STATE
  */
-const initialState = []
+const initialState = {}
 
 /**
  * ACTION CREATORS
@@ -25,8 +25,11 @@ export const fetchAllStocks = () => async dispatch => {
     const res = await axios.get(
       'https://api.iextrading.com/1.0/ref-data/symbols'
     )
-    console.log(res.data.length)
-    dispatch(getAllStocks(res.data || initialState))
+    let stocks = res.data.reduce((acc, el) => {
+      acc[el.symbol] = {name: el.name, isEnabled: el.isEnabled}
+      return acc
+    }, {})
+    dispatch(getAllStocks(stocks))
   } catch (err) {
     console.error(err)
   }

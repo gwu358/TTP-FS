@@ -6,28 +6,71 @@ import axios from 'axios'
 class SingleStock extends React.Component {
   constructor(props) {
     super(props)
+    this.symbol = props.match.params.symbol
     this.state = {
       quantity: 0,
       stock: {}
     }
-    // this.editQuantity = this.editQuantity.bind(this);
   }
 
   componentDidMount() {
-    const symbol = this.props.match.params.symbol
-    // this.props.fetchSingleStock(symbol)
+    this.socket = require('socket.io-client')(
+      'https://ws-api.iextrading.com/1.0/last'
+    )
+    let socket = this.socket
+    socket.on('message', data => {
+      try {
+        let last = Math.ceil(JSON.parse(data).price * 100) / 100
+        const state = {...this.state, stock: {...this.state.stock, last}}
+        this.setState(state)
+      } catch (e) {
+        console.error(e)
+      }
+    })
+    socket.on('connect', () => {
+      socket.emit('subscribe', this.symbol)
+    })
+
+    // axios
+    //   .get(`https://api.iextrading.com/1.0/stock/${this.symbol}/ohlc`)
+    //   .then(res => {
+    //     let stock;
+    //     if (res.data) {
+    //       stock = res.data;
+    //       stock.open = stock.open.price
+    //       stock.close = stock.close.price
+    //       stock.last = stock.close
+    //     } else stock = {}
+    //     this.setState({stock})
+    //   })
+    // axios.get(`https://api.iextrading.com/1.0/tops/last?symbols=${this.symbol}`)
+
     axios
-      .get(`https://api.iextrading.com/1.0/stock/${symbol}/ohlc`)
-      .then(res => {
-        let stock
-        if (res.data) {
-          stock = res.data
-          stock.open = stock.open.price
-          stock.close = stock.close.price
-          stock.current = stock.close
-        } else stock = {}
-        this.setState({stock})
-      })
+      .all([
+        axios.get(`https://api.iextrading.com/1.0/stock/${this.symbol}/ohlc`),
+        axios.get(
+          `https://api.iextrading.com/1.0/tops/last?symbols=${this.symbol}`
+        )
+      ])
+      .then(
+        axios.spread((ohlcRes, lastRes) => {
+          // do something with both responses
+          let stock = {}
+          if (ohlcRes.data) {
+            stock = ohlcRes.data
+            stock.open = stock.open.price
+            stock.close = stock.close.price
+          }
+          if (lastRes.data)
+            stock.last = Math.ceil(lastRes.data.price * 100) / 100
+          else stock.last = Math.ceil(stock.close * 100) / 100
+          this.setState({stock})
+        })
+      )
+  }
+
+  componentWillUnmount() {
+    this.socket.emit('unsubscribe', this.symbol)
   }
 
   IncrementItem = () => {
@@ -46,9 +89,9 @@ class SingleStock extends React.Component {
   }
 
   buy = quantity => {
-    const symbol = this.props.match.params.symbol.toUpperCase()
-    const price = this.state.stock.current * 100
-    console.log({symbol, price: this.state.stock.current * 100, quantity})
+    const symbol = this.symbol.toUpperCase()
+    const price = this.state.stock.last * 100
+    console.log({symbol, price: this.state.stock.last * 100, quantity})
     axios.post('/api/transactions', {
       symbol,
       price,
@@ -68,7 +111,7 @@ class SingleStock extends React.Component {
         low: {stock.low + '\t'}
         close: {stock.close + '\t'}
         <br />
-        current: {stock.current + '\t'}
+        last: {stock.last + '\t'}
         <br />
         <input
           type="text"
