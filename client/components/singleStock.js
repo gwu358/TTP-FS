@@ -1,12 +1,14 @@
 import React from 'react'
 import {connect} from 'react-redux'
-import {fetchSingleStock} from '../store'
+// import {fetchSingleStock} from '../store'
+import axios from 'axios'
 
 class SingleStock extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      quantity: 0
+      quantity: 0,
+      stock: {}
     }
     // this.editQuantity = this.editQuantity.bind(this);
   }
@@ -28,11 +30,24 @@ class SingleStock extends React.Component {
 
   componentDidMount() {
     const symbol = this.props.match.params.symbol
-    this.props.fetchSingleStock(symbol)
+    // this.props.fetchSingleStock(symbol)
+    axios
+      .get(`https://api.iextrading.com/1.0/stock/${symbol}/ohlc`)
+      .then(res => {
+        let stock
+        if (res.data) {
+          stock = res.data
+          stock.open = stock.open.price
+          stock.close = stock.close.price
+          stock.current = stock.close
+        } else stock = {}
+        this.setState({stock})
+      })
   }
 
   render() {
-    const {stock, buy} = this.props
+    const {stock} = this.state
+    const {buy} = this.props
     return (
       <div>
         open: {stock.open} {'\t'}
@@ -62,9 +77,6 @@ const mapState = state => ({
 })
 
 const mapDispatch = (dispatch, props) => ({
-  fetchSingleStock: symbol => {
-    dispatch(fetchSingleStock(symbol))
-  },
   buy: quantity => {
     const symbol = props.match.params.symbol.toUpperCase()
     console.log(symbol, quantity)

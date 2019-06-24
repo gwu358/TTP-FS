@@ -1,6 +1,6 @@
 import React from 'react'
 import {connect} from 'react-redux'
-import {fetchAllStocks, fetchSingleStock} from '../store'
+import {fetchAllStocks} from '../store'
 
 class Search extends React.Component {
   componentDidMount() {
@@ -8,16 +8,12 @@ class Search extends React.Component {
   }
 
   render() {
-    const {stocks, fetchSingleStock} = this.props
+    const {stocks, selectStock} = this.props
     console.log(stocks.length)
     return (
       <div>
         <p>{stocks.length}</p>
-        <form
-          action="submit"
-          name="symbol"
-          onSubmit={evt => fetchSingleStock(evt)}
-        >
+        <form action="submit" name="symbol" onSubmit={evt => selectStock(evt)}>
           <input
             className="input"
             type="text"
@@ -30,14 +26,14 @@ class Search extends React.Component {
   }
 }
 const mapState = state => ({
-  stocks: state.stock.all
+  stocks: state.stocks
 })
 
 const mapDispatch = (dispatch, props) => ({
   fetchAllStocks: () => {
     dispatch(fetchAllStocks())
   },
-  fetchSingleStock: evt => {
+  selectStock: evt => {
     evt.preventDefault()
     const symbol = evt.target.symbol.value
     props.history.push(`/stock/${symbol}`)
