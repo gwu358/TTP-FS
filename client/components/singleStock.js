@@ -1,6 +1,6 @@
 import React from 'react'
 import {connect} from 'react-redux'
-// import {fetchSingleStock} from '../store'
+import {updateBalance} from '../store'
 import axios from 'axios'
 
 class SingleStock extends React.Component {
@@ -47,13 +47,16 @@ class SingleStock extends React.Component {
 
   buy = quantity => {
     const symbol = this.props.match.params.symbol.toUpperCase()
+    const price = this.state.stock.current * 100
     console.log({symbol, price: this.state.stock.current * 100, quantity})
     axios.post('/api/transactions', {
       symbol,
-      price: this.state.stock.current * 100,
+      price,
       quantity
     })
     axios.put('/api/userStocks', {symbol, quantity})
+    this.props.updateBalance(price * quantity)
+    this.setState({quantity: 0})
   }
 
   render() {
@@ -77,7 +80,12 @@ class SingleStock extends React.Component {
         <button disabled={!this.state.quantity} onClick={this.DecreaseItem}>
           ↓
         </button>
-        <button onClick={() => this.buy(this.state.quantity)}>Buy</button>
+        <button
+          disabled={!this.state.quantity}
+          onClick={() => this.buy(this.state.quantity)}
+        >
+          Buy
+        </button>
       </div>
     )
   }
@@ -86,11 +94,14 @@ class SingleStock extends React.Component {
 //   stock: state.stock.single
 // })
 
-// const mapDispatch = (dispatch, props) => ({
-//   buy: quantity => {
-//     const symbol = props.match.params.symbol.toUpperCase()
-//     console.log(symbol, quantity)
-//   }
-// })
+const mapDispatch = dispatch => {
+  return {
+    updateBalance(total) {
+      dispatch(updateBalance(total))
+    }
+  }
+}
 
-export default SingleStock
+// The `withRouter` wrapper makes sure that updates are not blocked
+// when the url changes
+export default connect(null, mapDispatch)(SingleStock)

@@ -6,6 +6,7 @@ import history from '../history'
  */
 const GET_USER = 'GET_USER'
 const REMOVE_USER = 'REMOVE_USER'
+const RELOAD_BALANCE = 'RELOAD_BALANCE'
 
 /**
  * INITIAL STATE
@@ -17,6 +18,7 @@ const defaultUser = {}
  */
 const getUser = user => ({type: GET_USER, user})
 const removeUser = () => ({type: REMOVE_USER})
+const reloadBalance = balance => ({type: RELOAD_BALANCE, balance})
 
 /**
  * THUNK CREATORS
@@ -67,6 +69,17 @@ export const logout = () => async dispatch => {
   }
 }
 
+export const updateBalance = total => async (dispatch, getState) => {
+  try {
+    const balance = getState().user.balance - total
+    console.log(getState())
+    await axios.put('/api/user', {balance})
+    dispatch(reloadBalance(balance))
+  } catch (err) {
+    console.error(err)
+  }
+}
+
 /**
  * REDUCER
  */
@@ -76,6 +89,8 @@ export default function(state = defaultUser, action) {
       return action.user
     case REMOVE_USER:
       return defaultUser
+    case RELOAD_BALANCE:
+      return {...state, balance: action.balance}
     default:
       return state
   }
