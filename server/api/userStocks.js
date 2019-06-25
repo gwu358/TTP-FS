@@ -26,6 +26,13 @@ router.put('/', async (req, res, next) => {
     })
     if (!stock) {
       await UserStock.create({userId: req.user.id, symbol, quantity})
+    } else if (stock.quantity === -quantity) {
+      await UserStock.destroy({
+        where: {
+          userId: req.user.id,
+          symbol
+        }
+      })
     } else {
       await UserStock.update(
         {quantity: stock.quantity + quantity},

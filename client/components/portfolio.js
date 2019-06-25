@@ -1,6 +1,7 @@
 import React from 'react'
 import axios from 'axios'
 import {connect} from 'react-redux'
+import {updateBalance} from '../store'
 
 class Portfolio extends React.Component {
   constructor(props) {
@@ -67,18 +68,22 @@ class Portfolio extends React.Component {
     }
   }
 
-  sell = quantity => {
-    console.log(quantity)
+  sell = (symbol, quantity) => {
+    const state = {...this.state[symbol]}
+    quantity *= -1
     // const symbol = this.props.symbol.toUpperCase()
-    // const price = this.state.stock.last * 100
-    // axios.post('/api/transactions', {
-    //   symbol,
-    //   price,
-    //   quantity
-    // })
-    // axios.put('/api/userStocks', {symbol, quantity})
-    // this.props.updateBalance(price * quantity)
-    // this.setState({quantity: 0})
+    const price = state.last * 100
+    axios.post('/api/transactions', {
+      symbol,
+      price,
+      quantity
+    })
+    axios.put('/api/userStocks', {symbol, quantity})
+    this.props.updateBalance(price * quantity)
+
+    state.quantity -= state.sellQuantity
+    state.sellQuantity = 0
+    this.setState({[symbol]: state})
   }
 
   componentDidMount() {
@@ -94,7 +99,7 @@ class Portfolio extends React.Component {
             const quantity = this.state[symbol].quantity
             return (
               <li key={i}>
-                ({symbol}) {Math.abs(this.state[symbol].quantity)} Shares @ ${(
+                ({symbol}) {Math.abs(this.state[symbol].quantity)} Shares ${(
                   this.state[symbol].last || 0
                 ).toFixed(2)}
                 <input
@@ -117,7 +122,7 @@ class Portfolio extends React.Component {
                 </button>
                 <button
                   disabled={!quantity}
-                  onClick={() => this.sell(sellQuantity)}
+                  onClick={() => this.sell(symbol, sellQuantity)}
                 >
                   Sell
                 </button>
