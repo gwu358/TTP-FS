@@ -6,14 +6,13 @@ import axios from 'axios'
 class SingleStock extends React.Component {
   constructor(props) {
     super(props)
-    this.symbol = props.match.params.symbol
     this.state = {
       quantity: 0,
       stock: {}
     }
   }
 
-  componentDidMount() {
+  fetchData() {
     this.socket = require('socket.io-client')(
       'https://ws-api.iextrading.com/1.0/last'
     )
@@ -28,28 +27,18 @@ class SingleStock extends React.Component {
       }
     })
     socket.on('connect', () => {
-      socket.emit('subscribe', this.symbol)
+      socket.emit('subscribe', this.props.symbol)
     })
-
-    // axios
-    //   .get(`https://api.iextrading.com/1.0/stock/${this.symbol}/ohlc`)
-    //   .then(res => {
-    //     let stock;
-    //     if (res.data) {
-    //       stock = res.data;
-    //       stock.open = stock.open.price
-    //       stock.close = stock.close.price
-    //       stock.last = stock.close
-    //     } else stock = {}
-    //     this.setState({stock})
-    //   })
-    // axios.get(`https://api.iextrading.com/1.0/tops/last?symbols=${this.symbol}`)
 
     axios
       .all([
-        axios.get(`https://api.iextrading.com/1.0/stock/${this.symbol}/ohlc`),
         axios.get(
-          `https://api.iextrading.com/1.0/tops/last?symbols=${this.symbol}`
+          `https://api.iextrading.com/1.0/stock/${this.props.symbol}/ohlc`
+        ),
+        axios.get(
+          `https://api.iextrading.com/1.0/tops/last?symbols=${
+            this.props.symbol
+          }`
         )
       ])
       .then(
@@ -69,8 +58,18 @@ class SingleStock extends React.Component {
       )
   }
 
+  componentDidMount() {
+    this.fetchData()
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.symbol !== prevProps.symbol) {
+      this.fetchData()
+    }
+  }
+
   componentWillUnmount() {
-    this.socket.emit('unsubscribe', this.symbol)
+    this.socket.emit('unsubscribe', this.props.symbol)
   }
 
   IncrementItem = () => {
@@ -89,7 +88,7 @@ class SingleStock extends React.Component {
   }
 
   buy = quantity => {
-    const symbol = this.symbol.toUpperCase()
+    const symbol = this.props.symbol.toUpperCase()
     const price = this.state.stock.last * 100
     console.log({symbol, price: this.state.stock.last * 100, quantity})
     axios.post('/api/transactions', {
@@ -103,39 +102,48 @@ class SingleStock extends React.Component {
   }
 
   render() {
-    const {stock} = this.state
+    const {stock, quantity} = this.state
+    const {symbol, name, balance} = this.props
+    let totalInCent = stock.last * 100 * quantity
     return (
       <div>
+        <p>
+          {name} ({symbol})
+        </p>
         open: {stock.open} {'\t'}
         high: {stock.high + '\t'}
         low: {stock.low + '\t'}
         close: {stock.close + '\t'}
         <br />
-        last: {stock.last + '\t'}
+        latest: {stock.last + '\t'}
         <br />
         <input
           type="text"
           pattern="[0-9]*"
-          value={this.state.quantity}
+          value={quantity}
           onChange={this.editQuantity}
         />
         <button onClick={this.IncrementItem}>↑</button>
-        <button disabled={!this.state.quantity} onClick={this.DecreaseItem}>
+        <button disabled={!quantity} onClick={this.DecreaseItem}>
           ↓
         </button>
-        <button
-          disabled={!this.state.quantity}
-          onClick={() => this.buy(this.state.quantity)}
-        >
+        <button disabled={!quantity} onClick={() => this.buy(quantity)}>
           Buy
         </button>
+        <div>
+          Total: $ {(totalInCent / 100).toFixed(2)} <br />
+          Remaining: $ {((balance - totalInCent) / 100).toFixed(2)}
+        </div>
       </div>
     )
   }
 }
-// const mapState = state => ({
-//   stock: state.stock.single
-// })
+
+const mapState = state => {
+  return {
+    balance: state.user.balance
+  }
+}
 
 const mapDispatch = dispatch => {
   return {
@@ -145,6 +153,4 @@ const mapDispatch = dispatch => {
   }
 }
 
-// The `withRouter` wrapper makes sure that updates are not blocked
-// when the url changes
-export default connect(null, mapDispatch)(SingleStock)
+export default connect(mapState, mapDispatch)(SingleStock)

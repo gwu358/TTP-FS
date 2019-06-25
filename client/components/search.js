@@ -1,6 +1,7 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import {fetchAllStocks} from '../store'
+import SingleStock from './singleStock'
 
 class Search extends React.Component {
   constructor(props) {
@@ -18,19 +19,24 @@ class Search extends React.Component {
     const {stocks} = this.props
     const symbol = evt.target.symbol.value.toUpperCase()
     if (!stocks[symbol])
-      this.setState({error: 'Please enter a value ticker symbol'})
+      this.setState({
+        error: 'Please enter a valid ticker symbol',
+        symbol: undefined
+      })
     else if (!stocks[symbol].isEnabled)
       this.setState({
-        error: `${stocks[symbol].name} (${symbol}) is currently disabled`
+        error: `${stocks[symbol].name} (${symbol}) is currently disabled`,
+        symbol: undefined
       })
     else {
-      this.setState({error: undefined})
-      this.props.history.push(`/stock/${symbol}`)
+      console.log(symbol)
+      this.setState({error: undefined, symbol})
     }
   }
 
   render() {
     const {stocks} = this.props
+    this.state.symbol && console.log(stocks[this.state.symbol])
     return (
       <div>
         <p>{Object.values(stocks).length}</p>
@@ -44,9 +50,16 @@ class Search extends React.Component {
             type="text"
             name="symbol"
             placeholder="Enter a ticker symbol"
+            autoComplete="off"
           />
         </form>
         {this.state.error && <small>{this.state.error}</small>}
+        {this.state.symbol && (
+          <SingleStock
+            symbol={this.state.symbol}
+            name={stocks[this.state.symbol].name}
+          />
+        )}
       </div>
     )
   }

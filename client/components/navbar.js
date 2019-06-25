@@ -16,7 +16,7 @@ const Navbar = ({handleClick, isLoggedIn, balance}) => (
           <a href="#" onClick={handleClick}>
             Logout
           </a>
-          <span>balance: ${(balance / 100).toFixed(2)}</span>
+          <span>balance: $ {(balance / 100).toFixed(2)}</span>
         </div>
       ) : (
         <div>
