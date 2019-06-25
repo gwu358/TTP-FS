@@ -50,10 +50,13 @@ class SingleStock extends React.Component {
             stock.open = stock.open.price
             stock.close = stock.close.price
           }
+          console.log(lastRes.data)
+          console.log(Array.isArray(lastRes.data))
           if (lastRes.data)
             stock.last = Math.ceil(lastRes.data.price * 100) / 100
           else stock.last = Math.ceil(stock.close * 100) / 100
           this.setState({stock})
+          console.log(stock)
         })
       )
   }
@@ -113,6 +116,7 @@ class SingleStock extends React.Component {
 
   render() {
     const {stock, quantity} = this.state
+    console.log(stock)
     const {symbol, name, balance} = this.props
     let totalInCent = stock.last * 100 * quantity
     return (
