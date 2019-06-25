@@ -5,7 +5,7 @@ module.exports = router
 router.put('/', async (req, res, next) => {
   try {
     await User.update(
-      {balance: req.user.balance},
+      {balance: req.body.balance},
       {
         where: {id: req.user.id}
       }

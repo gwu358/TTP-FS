@@ -66,8 +66,7 @@ class SingleStock extends React.Component {
   }
 
   IncrementItem = () => {
-    const quantity = this.verifyQuantity(this.state.quantity + 1)
-    this.setState({quantity})
+    this.setState({quantity: this.state.quantity + 1})
   }
 
   DecreaseItem = () => {
@@ -118,7 +117,12 @@ class SingleStock extends React.Component {
           value={quantity}
           onChange={this.editQuantity}
         />
-        <button onClick={this.IncrementItem}>↑</button>
+        <button
+          disabled={balance < stock.last * 100 * (quantity + 1)}
+          onClick={this.IncrementItem}
+        >
+          ↑
+        </button>
         <button disabled={!quantity} onClick={this.DecreaseItem}>
           ↓
         </button>

@@ -72,7 +72,6 @@ export const logout = () => async dispatch => {
 export const updateBalance = total => async (dispatch, getState) => {
   try {
     const balance = getState().user.balance - total
-    console.log(getState())
     await axios.put('/api/user', {balance})
     dispatch(reloadBalance(balance))
   } catch (err) {

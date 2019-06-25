@@ -11,7 +11,7 @@ class Portfolio extends React.Component {
 
   fetchData() {
     axios.get(`/api/userStocks`).then(res => {
-      const userStocks = res.data
+      this.userStocks = res.data
       this.socket = require('socket.io-client')(
         'https://ws-api.iextrading.com/1.0/last'
       )
@@ -27,12 +27,12 @@ class Portfolio extends React.Component {
         }
       })
       socket.on('connect', () => {
-        userStocks.forEach(stock => socket.emit('subscribe', stock.symbol))
+        this.userStocks.forEach(stock => socket.emit('subscribe', stock.symbol))
       })
 
       let state = {}
       Promise.all(
-        userStocks.map(stock => {
+        this.userStocks.map(stock => {
           state[stock.symbol] = {quantity: stock.quantity, sellQuantity: 0}
           return axios
             .get(`https://api.iextrading.com/1.0/stock/${stock.symbol}/ohlc`)
@@ -88,6 +88,12 @@ class Portfolio extends React.Component {
 
   componentDidMount() {
     this.fetchData()
+  }
+
+  componentWillUnmount() {
+    this.userStocks.forEach(stock => {
+      this.socket.emit('unsubscribe', stock.symbol)
+    })
   }
 
   render() {

@@ -11,7 +11,6 @@ class Search extends React.Component {
 
   componentDidMount() {
     this.props.fetchAllStocks()
-    console.log('fetch!')
   }
 
   selectStock(evt) {
@@ -36,14 +35,13 @@ class Search extends React.Component {
 
   render() {
     const {stocks} = this.props
-    this.state.symbol && console.log(stocks[this.state.symbol])
+
     return (
       <div>
-        <p>{Object.values(stocks).length}</p>
         <form
           action="submit"
           name="symbol"
-          onSubmit={evt => this.selectStock(evt, stocks)}
+          onSubmit={evt => this.selectStock(evt)}
         >
           <input
             className="input"
