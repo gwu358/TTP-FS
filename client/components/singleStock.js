@@ -31,34 +31,17 @@ class SingleStock extends React.Component {
     })
 
     axios
-      .all([
-        axios.get(
-          `https://api.iextrading.com/1.0/stock/${this.props.symbol}/ohlc`
-        ),
-        axios.get(
-          `https://api.iextrading.com/1.0/tops/last?symbols=${
-            this.props.symbol
-          }`
-        )
-      ])
-      .then(
-        axios.spread((ohlcRes, lastRes) => {
-          // do something with both responses
-          let stock = {}
-          if (ohlcRes.data) {
-            stock = ohlcRes.data
-            stock.open = stock.open.price
-            stock.close = stock.close.price
-          }
-          console.log(lastRes.data)
-          console.log(Array.isArray(lastRes.data))
-          if (lastRes.data)
-            stock.last = Math.ceil(lastRes.data.price * 100) / 100
-          else stock.last = Math.ceil(stock.close * 100) / 100
-          this.setState({stock})
-          console.log(stock)
-        })
-      )
+      .get(`https://api.iextrading.com/1.0/stock/${this.props.symbol}/ohlc`)
+      .then(res => {
+        let stock = {}
+        if (res.data) {
+          stock = res.data
+          stock.open = stock.open.price
+          stock.close = stock.close.price
+          stock.last = stock.close
+        }
+        this.setState({stock})
+      })
   }
 
   componentDidMount() {
@@ -103,7 +86,6 @@ class SingleStock extends React.Component {
   buy = quantity => {
     const symbol = this.props.symbol.toUpperCase()
     const price = this.state.stock.last * 100
-    console.log({symbol, price: this.state.stock.last * 100, quantity})
     axios.post('/api/transactions', {
       symbol,
       price,
@@ -116,7 +98,6 @@ class SingleStock extends React.Component {
 
   render() {
     const {stock, quantity} = this.state
-    console.log(stock)
     const {symbol, name, balance} = this.props
     let totalInCent = stock.last * 100 * quantity
     return (
