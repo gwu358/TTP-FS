@@ -72,8 +72,16 @@ class SingleStock extends React.Component {
     this.socket.emit('unsubscribe', this.props.symbol)
   }
 
+  verifyQuantity(quantity) {
+    const balance = this.props.balance / 100
+    if (quantity * this.state.stock.last > balance)
+      quantity = Math.trunc(balance / this.state.stock.last)
+    return quantity
+  }
+
   IncrementItem = () => {
-    this.setState({quantity: this.state.quantity + 1})
+    const quantity = this.verifyQuantity(this.state.quantity + 1)
+    this.setState({quantity})
   }
 
   DecreaseItem = () => {
@@ -81,8 +89,10 @@ class SingleStock extends React.Component {
   }
 
   editQuantity = event => {
-    let quantity = Number(
-      event.target.validity.valid ? event.target.value : this.state.quantity
+    let quantity = this.verifyQuantity(
+      Number(
+        event.target.validity.valid ? event.target.value : this.state.quantity
+      )
     )
     this.setState({quantity})
   }
