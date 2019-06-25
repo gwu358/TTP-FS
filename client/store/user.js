@@ -7,6 +7,7 @@ import history from '../history'
 const GET_USER = 'GET_USER'
 const REMOVE_USER = 'REMOVE_USER'
 const RELOAD_BALANCE = 'RELOAD_BALANCE'
+const CLEAR_ERROR_MESSAGE = 'CLEAR_ERROR_MESSAGE'
 
 /**
  * INITIAL STATE
@@ -19,7 +20,7 @@ const defaultUser = {}
 const getUser = user => ({type: GET_USER, user})
 const removeUser = () => ({type: REMOVE_USER})
 const reloadBalance = balance => ({type: RELOAD_BALANCE, balance})
-
+const clearErrorMessage = () => ({type: CLEAR_ERROR_MESSAGE})
 /**
  * THUNK CREATORS
  */
@@ -79,6 +80,10 @@ export const updateBalance = total => async (dispatch, getState) => {
   }
 }
 
+export const clearErrorResponse = () =>
+  function(dispatch) {
+    dispatch(clearErrorMessage())
+  }
 /**
  * REDUCER
  */
@@ -90,6 +95,8 @@ export default function(state = defaultUser, action) {
       return defaultUser
     case RELOAD_BALANCE:
       return {...state, balance: action.balance}
+    case CLEAR_ERROR_MESSAGE:
+      return {...state, error: {...state.error, response: undefined}}
     default:
       return state
   }
