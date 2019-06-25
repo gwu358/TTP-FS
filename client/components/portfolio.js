@@ -20,7 +20,8 @@ class Portfolio extends React.Component {
         try {
           data = JSON.parse(data)
           let last = Math.ceil(data.price * 100) / 100
-          const state = {...this.state[data.symbol], last}
+          let size = data.size
+          const state = {...this.state[data.symbol], last, size}
           this.setState({[data.symbol]: state})
         } catch (e) {
           console.error(e)
@@ -39,6 +40,7 @@ class Portfolio extends React.Component {
             .then(({data}) => {
               state[stock.symbol].open = data.open.price
               state[stock.symbol].last = data.close.price
+              state[stock.symbol].size = 0
             })
         })
       ).then(() => {
@@ -105,9 +107,10 @@ class Portfolio extends React.Component {
             const quantity = this.state[symbol].quantity
             return (
               <li key={i}>
-                ({symbol}) {Math.abs(this.state[symbol].quantity)} Shares ${(
+                ({symbol}) {Math.abs(this.state[symbol].quantity)} Shares $({(
                   this.state[symbol].last || 0
-                ).toFixed(2)}
+                ).toFixed(2)}{' '}
+                X {this.state[symbol].size})
                 <input
                   type="text"
                   pattern="[0-9]*"
