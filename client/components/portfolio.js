@@ -164,7 +164,7 @@ class Portfolio extends React.Component {
                       ↓
                     </button>
                     <button
-                      disabled={!quantity}
+                      disabled={!sellQuantity}
                       onClick={() => this.sell(symbol, sellQuantity)}
                     >
                       Sell
