@@ -100,45 +100,81 @@ class Portfolio extends React.Component {
 
   render() {
     return (
-      <div>
-        <ul>
-          {Object.keys(this.state).map((symbol, i) => {
-            const sellQuantity = this.state[symbol].sellQuantity
-            const quantity = this.state[symbol].quantity
-            return (
-              <li key={i}>
-                ({symbol}) {Math.abs(this.state[symbol].quantity)} Shares $({(
-                  this.state[symbol].last || 0
-                ).toFixed(2)}{' '}
-                X {this.state[symbol].size})
-                <input
-                  type="text"
-                  pattern="[0-9]*"
-                  value={sellQuantity}
-                  onChange={evt => this.editQuantity(evt, symbol)}
-                />
-                <button
-                  disabled={sellQuantity === quantity}
-                  onClick={() => this.IncrementItem(symbol)}
+      <div className="columns is-centered">
+        <table className="table">
+          <thead>
+            <tr>
+              <th>No.</th>
+              <th>Symbol</th>
+              <th>Share(s)</th>
+              <th>
+                <abbr title="Open Price">OP</abbr>
+              </th>
+              <th>
+                <abbr title="Last Sell Price">LSP</abbr>
+              </th>
+              <th>
+                <abbr title="Last Sell Size">LSS</abbr>
+              </th>
+              <th>
+                <abbr title="Sell @ the Last Sell Price">Sell</abbr>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {Object.keys(this.state).map((symbol, i) => {
+              const sellQuantity = this.state[symbol].sellQuantity
+              const quantity = this.state[symbol].quantity
+              return (
+                <tr
+                  key={i}
+                  style={{
+                    backgroundColor:
+                      this.state[symbol].last > this.state[symbol].open
+                        ? 'LightGreen'
+                        : this.state[symbol].last < this.state[symbol].open
+                          ? 'LightPink'
+                          : 'LightGray'
+                  }}
                 >
-                  ↑
-                </button>
-                <button
-                  disabled={!sellQuantity}
-                  onClick={() => this.DecreaseItem(symbol)}
-                >
-                  ↓
-                </button>
-                <button
-                  disabled={!quantity}
-                  onClick={() => this.sell(symbol, sellQuantity)}
-                >
-                  Sell
-                </button>
-              </li>
-            )
-          })}
-        </ul>
+                  <th>{i + 1}</th>
+                  <td>{symbol}</td>
+                  <td>{Math.abs(this.state[symbol].quantity)}</td>
+                  <td>{this.state[symbol].open}</td>
+                  <td>{(this.state[symbol].last || 0).toFixed(2)}</td>
+                  <td>{this.state[symbol].size}</td>
+                  <td>
+                    <input
+                      type="text"
+                      pattern="[0-9]*"
+                      style={{width: '80px'}}
+                      value={sellQuantity}
+                      onChange={evt => this.editQuantity(evt, symbol)}
+                    />
+                    <button
+                      disabled={sellQuantity === quantity}
+                      onClick={() => this.IncrementItem(symbol)}
+                    >
+                      ↑
+                    </button>
+                    <button
+                      disabled={!sellQuantity}
+                      onClick={() => this.DecreaseItem(symbol)}
+                    >
+                      ↓
+                    </button>
+                    <button
+                      disabled={!quantity}
+                      onClick={() => this.sell(symbol, sellQuantity)}
+                    >
+                      Sell
+                    </button>
+                  </td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
       </div>
     )
   }

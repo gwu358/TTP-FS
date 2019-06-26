@@ -114,6 +114,7 @@ class SingleStock extends React.Component {
         <input
           type="text"
           pattern="[0-9]*"
+          style={{width: '80px'}}
           value={quantity}
           onChange={this.editQuantity}
         />

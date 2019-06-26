@@ -37,27 +37,30 @@ class Search extends React.Component {
     const {stocks} = this.props
 
     return (
-      <div>
-        <form
-          action="submit"
-          name="symbol"
-          onSubmit={evt => this.selectStock(evt)}
-        >
-          <input
-            className="input"
-            type="text"
+      <div className="columns is-centered">
+        <div>
+          <form
+            action="submit"
             name="symbol"
-            placeholder="Enter a ticker symbol"
-            autoComplete="off"
-          />
-        </form>
-        {this.state.error && <small>{this.state.error}</small>}
-        {this.state.symbol && (
-          <SingleStock
-            symbol={this.state.symbol}
-            name={stocks[this.state.symbol].name}
-          />
-        )}
+            onSubmit={evt => this.selectStock(evt)}
+          >
+            <input
+              type="text"
+              name="symbol"
+              style={{width: '150px'}}
+              placeholder="Enter a ticker symbol"
+              autoComplete="off"
+            />
+            <button type="submit">Search</button>
+          </form>
+          {this.state.error && <small>{this.state.error}</small>}
+          {this.state.symbol && (
+            <SingleStock
+              symbol={this.state.symbol}
+              name={stocks[this.state.symbol].name}
+            />
+          )}
+        </div>
       </div>
     )
   }

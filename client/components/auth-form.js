@@ -16,7 +16,7 @@ class AuthForm extends React.Component {
     const {name, displayName, handleSubmit, error} = this.props
 
     return (
-      <div>
+      <div className="columns is-centered">
         <form onSubmit={handleSubmit} name={name}>
           <div>
             <label htmlFor="email">
@@ -24,20 +24,24 @@ class AuthForm extends React.Component {
             </label>
             <input name="email" type="text" />
           </div>
+          <br />
+
           <div>
             <label htmlFor="password">
               <small>Password</small>
             </label>
             <input name="password" type="password" />
           </div>
+          <br />
           {name === 'signup' && (
-            <div>
+            <span>
               <div>
                 <label htmlFor="firstName">
                   <small>First Name</small>
                 </label>
                 <input name="firstName" type="text" />
               </div>
+              <br />
 
               <div>
                 <label htmlFor="lastName">
@@ -45,7 +49,8 @@ class AuthForm extends React.Component {
                 </label>
                 <input name="lastName" type="text" />
               </div>
-            </div>
+              <br />
+            </span>
           )}
           <div>
             <button type="submit">{displayName}</button>

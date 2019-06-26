@@ -9,7 +9,7 @@ export const UserHome = props => {
   const {firstName, lastName} = props
 
   return (
-    <div>
+    <div className="columns is-centered">
       <h3>Welcome, {firstName + ' ' + lastName}</h3>
     </div>
   )
