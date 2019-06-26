@@ -84,7 +84,7 @@ class SingleStock extends React.Component {
 
   buy = quantity => {
     const symbol = this.props.symbol.toUpperCase()
-    const price = this.state.stock.last * 100
+    const price = Math.round(this.state.stock.last * 100)
     axios.post('/api/transactions', {
       symbol,
       price,

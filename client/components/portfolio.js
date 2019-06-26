@@ -74,7 +74,7 @@ class Portfolio extends React.Component {
     const state = {...this.state[symbol]}
     quantity *= -1
     // const symbol = this.props.symbol.toUpperCase()
-    const price = state.last * 100
+    const price = Math.round(state.last * 100)
     axios.post('/api/transactions', {
       symbol,
       price,
