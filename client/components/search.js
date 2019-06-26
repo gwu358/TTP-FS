@@ -28,7 +28,6 @@ class Search extends React.Component {
         symbol: undefined
       })
     else {
-      console.log(symbol)
       this.setState({error: undefined, symbol})
     }
   }
